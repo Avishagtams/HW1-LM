@@ -109,6 +109,22 @@ ada_df = pd.DataFrame(ada_results, columns=["name","n_estimators","learning_rate
 print("\nAdaBoost Results:")
 print(ada_df)
 ada_df.to_csv("ADA_Results_Table.csv", index=False)
+from xgboost import XGBClassifier
+import time
 
-
+# ======================== PART 5 ==========================
+configs_xgb = [("XGB_100_3_lr0.1", 100, 3, 0.1, 1.0),("XGB_200_4_lr0.05", 200, 4, 0.05, 0.8),("XGB_300_5_lr0.1", 300, 5, 0.1, 0.7)]
+xgb_results = []
+for name, est, depth, lr, subs in configs_xgb:
+    start = time.time()
+    xgb = XGBClassifier(n_estimators=est,max_depth=depth,learning_rate=lr,subsample=subs,colsample_bytree=0.8,objective="multi:softprob",eval_metric="mlogloss",random_state=42)
+    xgb.fit(X_train, y_train)
+    y_pred = xgb.predict(X_test)
+    y_prob = xgb.predict_proba(X_test)
+    end = time.time()
+    xgb_results.append([name, est, depth, lr, subs,accuracy_score(y_test, y_pred),f1_score(y_test, y_pred, average="weighted"),roc_auc_score(y_test, y_prob, multi_class="ovr"),end - start])
+xgb_df = pd.DataFrame(xgb_results,columns=["name", "n_estimators", "max_depth", "lr", "subsample", "Accuracy", "F1", "AUC", "Train_time"])
+print("\nXGBoost Results:")
+print(xgb_df)
+xgb_df.to_csv("XGBoost_Results_Table.csv", index=False)
 

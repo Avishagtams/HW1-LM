@@ -6,6 +6,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import AdaBoostClassifier
 
 pd.set_option('future.no_silent_downcasting', True)
 #======================== PART 1 ==========================
@@ -93,6 +94,21 @@ plt.ylabel("F1 score")
 plt.title("Random Forest: Trees vs F1")
 plt.savefig("TreesVSf1.png", dpi=300)
 rf_df.to_csv("RF_Results_Table.csv", index=False)
+#======================== PART 4 ==========================
+
+ada_configs = [("ADA_50_1.0",   50, 1.0),("ADA_100_0.5", 100, 0.5),("ADA_200_2.0", 200, 2.0)]
+ada_results = []
+for name, est, lr in ada_configs:
+    ada = AdaBoostClassifier(n_estimators=est, learning_rate=lr, random_state=42)
+    ada.fit(X_train, y_train)
+    y_pred = ada.predict(X_test)
+    y_prob = ada.predict_proba(X_test)
+
+    ada_results.append([name,est,lr,accuracy_score(y_test, y_pred),f1_score(y_test, y_pred, average="weighted"),roc_auc_score(y_test, y_prob, multi_class="ovr")])
+ada_df = pd.DataFrame(ada_results, columns=["name","n_estimators","learning_rate","Accuracy","F1","AUC"])
+print("\nAdaBoost Results:")
+print(ada_df)
+ada_df.to_csv("ADA_Results_Table.csv", index=False)
 
 
 

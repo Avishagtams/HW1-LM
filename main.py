@@ -127,4 +127,3 @@ xgb_df = pd.DataFrame(xgb_results,columns=["name", "n_estimators", "max_depth", 
 print("\nXGBoost Results:")
 print(xgb_df)
 xgb_df.to_csv("XGBoost_Results_Table.csv", index=False)
-

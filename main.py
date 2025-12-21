@@ -125,6 +125,14 @@ plt.ylabel("F1 score")
 plt.title("Random Forest: Trees vs F1")
 plt.savefig("TreesVSf1.png", dpi=300)
 rf_df.to_csv("RF_Results_Table.csv", index=False)
+# === Feature Importance: Random Forest ===
+importances_rf = pd.Series(rf.feature_importances_, index=X.columns)
+plt.figure(figsize=(8, 6))
+importances_rf.sort_values().tail(10).plot(kind="barh")
+plt.title("Random Forest – Feature Importance")
+plt.tight_layout()
+plt.savefig("RF_FeatureImportance.png", dpi=300)
+plt.close()
 #======================== PART 4 ==========================
 
 ada_configs = [("ADA_50_1.0",   50, 1.0),("ADA_100_0.5", 100, 0.5),("ADA_200_2.0", 200, 2.0)]
@@ -161,4 +169,12 @@ xgb_df = pd.DataFrame(xgb_results,columns=["name", "n_estimators", "max_depth", 
 print("\nXGBoost Results:")
 print(xgb_df)
 xgb_df.to_csv("XGBoost_Results_Table.csv", index=False)
+# === Feature Importance: XGBoost ===
+importances_xgb = pd.Series(xgb.feature_importances_, index=X.columns)
+plt.figure(figsize=(8, 6))
+importances_xgb.sort_values().tail(10).plot(kind="barh")
+plt.title("XGBoost – Feature Importance")
+plt.tight_layout()
+plt.savefig("XGB_FeatureImportance.png", dpi=300)
+plt.close()
 

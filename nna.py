@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score, confusion_matrix
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.ensemble import AdaBoostClassifier
 def error_analysis(name, X_test, y_true, y_pred):
@@ -97,12 +97,6 @@ f1 = f1_score(y_test, y_pred, average="weighted")
 auc = roc_auc_score(y_test, y_prob, multi_class="ovr")
 
 print(f"Baseline Logistic Regression -> Accuracy: {acc:.3f}, Precision: {prec:.3f}, Recall: {rec:.3f}, F1: {f1:.3f}, AUC: {auc:.3f}")
-error_analysis("Logistic Regression", X_test, y_test, y_pred)
-
-# ===== Cross-Validation (added) =====
-from sklearn.model_selection import cross_val_score
-cv = cross_val_score(LogisticRegression(max_iter=500), X, y, cv=5, scoring="f1_weighted")
-print("CV F1 scores:", cv, "Mean:", cv.mean())
 
 #======================== PART 3 ==========================
 configs = [("RF_50_5",   50, 5),("RF_100_10", 100, 10),("RF_200_None", 200, None)]
@@ -112,7 +106,6 @@ for name, est, depth in configs:
     rf.fit(X_train, y_train)
     y_pred = rf.predict(X_test)
     y_prob = rf.predict_proba(X_test)
-    error_analysis(name, X_test, y_test, y_pred)
 
     results.append([name,est,depth,accuracy_score(y_test, y_pred),f1_score(y_test, y_pred, average="weighted")])
 # Table
@@ -134,8 +127,6 @@ for name, est, lr in ada_configs:
     ada.fit(X_train, y_train)
     y_pred = ada.predict(X_test)
     y_prob = ada.predict_proba(X_test)
-    error_analysis(name, X_test, y_test, y_pred)
-
 
     ada_results.append([name,est,lr,accuracy_score(y_test, y_pred),f1_score(y_test, y_pred, average="weighted"),roc_auc_score(y_test, y_prob, multi_class="ovr")])
 ada_df = pd.DataFrame(ada_results, columns=["name","n_estimators","learning_rate","Accuracy","F1","AUC"])
@@ -155,7 +146,6 @@ for name, est, depth, lr, subs in configs_xgb:
     y_pred = xgb.predict(X_test)
     y_prob = xgb.predict_proba(X_test)
     end = time.time()
-    error_analysis(name, X_test, y_test, y_pred)
     xgb_results.append([name, est, depth, lr, subs,accuracy_score(y_test, y_pred),f1_score(y_test, y_pred, average="weighted"),roc_auc_score(y_test, y_prob, multi_class="ovr"),end - start])
 xgb_df = pd.DataFrame(xgb_results,columns=["name", "n_estimators", "max_depth", "lr", "subsample", "Accuracy", "F1", "AUC", "Train_time"])
 print("\nXGBoost Results:")
